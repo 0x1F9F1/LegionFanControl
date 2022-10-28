@@ -243,17 +243,7 @@ void ECRamWriteExt_Direct(unsigned short iIndex, BYTE data)
 #include <algorithm>
 #include <array>
 #include <cinttypes>
-#include <string>
-#include <unordered_map>
 #include <vector>
-
-using String = std::string;
-
-template <typename T>
-using Vec = std::vector<T>;
-
-template <typename K, typename V>
-using HashMap = std::unordered_map<K, V>;
 
 bool CheckECVersion()
 {
@@ -435,7 +425,7 @@ bool FixDriverSecurity()
     return success;
 }
 
-bool ValidateFanProfile(const Vec<FanLevel>& levels)
+bool ValidateFanProfile(const std::vector<FanLevel>& levels)
 {
     if (levels.size() < 2) {
         printf("Too few fan levels");
@@ -536,7 +526,7 @@ bool ValidateFanProfile(const Vec<FanLevel>& levels)
     return true;
 }
 
-void WriteFanProfile(const Vec<FanLevel>& levels)
+void WriteFanProfile(const std::vector<FanLevel>& levels)
 {
     // Reset fan update counters (try to avoid any race conditions)
     EC_RAM_WRITE(0xC5FE, 0);
@@ -594,7 +584,7 @@ void UnlockFanProfile()
     printf("Unlocked fan profile\n");
 }
 
-bool ReadFanProfile(FILE* input, Vec<FanLevel>& levels)
+bool ReadFanProfile(FILE* input, std::vector<FanLevel>& levels)
 {
     levels.clear();
 
@@ -624,7 +614,7 @@ bool ReadFanProfile(FILE* input, Vec<FanLevel>& levels)
     return true;
 }
 
-bool LoadFanProfile(const char* path, Vec<FanLevel>& profile)
+bool LoadFanProfile(const char* path, std::vector<FanLevel>& profile)
 {
     FILE* input = NULL;
 
@@ -633,7 +623,6 @@ bool LoadFanProfile(const char* path, Vec<FanLevel>& profile)
         return false;
     }
 
-    String name;
     bool success = ReadFanProfile(input, profile);
 
     fclose(input);
@@ -734,7 +723,7 @@ int main(int argc, char* argv[])
                     UnlockFanProfile();
                 } else if (!strcmp(arg, "SetProfile") && (i < argc)) {
                     const char* path = argv[i++];
-                    Vec<FanLevel> profile;
+                    std::vector<FanLevel> profile;
 
                     if (LoadFanProfile(path, profile)) {
                         WriteFanProfile(profile);
