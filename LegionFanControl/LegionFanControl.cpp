@@ -272,26 +272,6 @@ bool CheckECVersion()
     return true;
 }
 
-void CheckFanLevel(uint16_t addr, uint8_t index)
-{
-    static uint8_t FanLevels[3];
-    static uint16_t FanLevelDurations[3];
-
-    uint8_t level = EC_RAM_READ(addr);
-
-    if (level != FanLevels[index]) {
-        FanLevels[index] = level;
-        FanLevelDurations[index] = 0;
-    } else if (level > 0) {
-        if (++FanLevelDurations[index] == 120) {
-            --level;
-            EC_RAM_WRITE(addr, level);
-            FanLevelDurations[index] = 0;
-            // printf("Lowered Level%u to %u\n", index, level);
-        }
-    }
-}
-
 struct FanLevel {
     // RPM (/100) of the fans
     uint8_t RPM;
